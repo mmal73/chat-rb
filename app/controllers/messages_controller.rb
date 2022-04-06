@@ -1,18 +1,16 @@
 class MessagesController < ApplicationController
-  before_action :get_room
+  before_action :getroom
 
   def new
     @message = @room.messages.build
   end
 
   def create
-    puts '**************************'
-    puts params
-    puts '**************************'
     @message = @room.messages.build(message_params)
 
     respond_to do |format|
       if @message.save
+        format.turbo_stream
         format.html { redirect_to @room, notice: 'Message was successfully created.' }
         format.json { render :show, status: :created, location: @message }
       else
@@ -23,12 +21,12 @@ class MessagesController < ApplicationController
   end
 
   def message_params
-    params.require(:message).permit(:content, :room_id)
+    params.require(:message).permit(:content)
   end
 
   private
 
-  def get_room
+  def getroom
     @room = Room.find(params[:room_id])
   end
 end
